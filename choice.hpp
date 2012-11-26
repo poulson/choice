@@ -45,7 +45,7 @@ namespace choice {
 class Args
 {
 public:
-    Args( int argc, char** argv );
+    Args( int argc, char** argv, std::ostream& error=std::cerr );
 
     template<typename T>
     T Required( std::string name, std::string desc="N/A" );
@@ -53,13 +53,14 @@ public:
     template<typename T>
     T Optional( std::string name, T defaultVal, std::string desc="N/A" );
 
-    void EnsureValid( std::ostream& os=std::cout ) const;
-    void PrintReport( std::ostream& os=std::cout ) const;
+    void EnsureValid( std::ostream& output=std::cout ) const;
+    void PrintReport( std::ostream& output=std::cout ) const;
 
 private:
     int argc_;
     char** argv_;
     std::vector<bool> usedArgs_;
+    std::ostream& error_;
 
     struct RequiredArg
     { 
@@ -100,8 +101,8 @@ private:
 };
 
 inline
-Args::Args( int argc, char** argv )
-: argc_(argc), argv_(argv), usedArgs_(argc,false) 
+Args::Args( int argc, char** argv, std::ostream& error )
+: argc_(argc), argv_(argv), usedArgs_(argc,false), error_(error)
 { }
 
 template<typename T>
@@ -124,24 +125,24 @@ Args::Required( std::string name, std::string desc )
         const int offset = arg - argv_;
         if( usedArgs_[offset] || usedArgs_[offset+1] )
         {
-            std::cerr << "WARNING: conflict with " << name << " detected at ";
+            error_ << "WARNING: conflict with " << name << " detected at ";
             if( usedArgs_[offset] && usedArgs_[offset+1] )
-                std::cerr << "arguments " << offset << " and " << offset+1
-                          << std::endl;
+                error_ << "arguments " << offset << " and " << offset+1
+                       << std::endl;
             else if( usedArgs_[offset] )
-                std::cerr << "argument " << offset << std::endl;
+                error_ << "argument " << offset << std::endl;
             else
-                std::cerr << "argument " << offset+1 << std::endl;
-            std::cerr << "Please ensure that you did request argument " 
-                      << name << " multiple times" << std::endl;
+                error_ << "argument " << offset+1 << std::endl;
+            error_ << "Please ensure that you did request argument " 
+                   << name << " multiple times" << std::endl;
         }
         usedArgs_[offset+0] = true;
         usedArgs_[offset+1] = true;
 
         arg = std::find( arg+1, argv_+argc_, name );
         if( arg != argv_+argc_ )
-            std::cerr << "WARNING: " << name << " was specified twice and only "
-                      << "the first instance is used" << std::endl;
+            error_ << "WARNING: " << name << " was specified twice and only "
+                   << "the first instance is used" << std::endl;
     }
 
     return Cast<T>( usedVal );
@@ -171,24 +172,24 @@ Args::Optional( std::string name, T defaultVal, std::string desc )
         const int offset = arg - argv_;
         if( usedArgs_[offset] || usedArgs_[offset+1] )
         {
-            std::cerr << "WARNING: conflict with " << name << " detected at ";
+            error_ << "WARNING: conflict with " << name << " detected at ";
             if( usedArgs_[offset] && usedArgs_[offset+1] )
-                std::cerr << "arguments " << offset << " and " << offset+1
-                          << std::endl;
+                error_ << "arguments " << offset << " and " << offset+1
+                       << std::endl;
             else if( usedArgs_[offset] )
-                std::cerr << "argument " << offset << std::endl;
+                error_ << "argument " << offset << std::endl;
             else
-                std::cerr << "argument " << offset+1 << std::endl;
-            std::cerr << "Please ensure that you did request argument " 
-                      << name << " multiple times" << std::endl;
+                error_ << "argument " << offset+1 << std::endl;
+            error_ << "Please ensure that you did request argument " 
+                   << name << " multiple times" << std::endl;
         }
         usedArgs_[offset+0] = true;
         usedArgs_[offset+1] = true;
 
         arg = std::find( arg+1, argv_+argc_, name );
         if( arg != argv_+argc_ )
-            std::cerr << "WARNING: " << name << " was specified twice and only "
-                      << "the first instance is used" << std::endl;
+            error_ << "WARNING: " << name << " was specified twice and only "
+                   << "the first instance is used" << std::endl;
     }
 
     if( found )
@@ -198,7 +199,7 @@ Args::Optional( std::string name, T defaultVal, std::string desc )
 }
 
 inline void 
-Args::EnsureValid( std::ostream& os ) const
+Args::EnsureValid( std::ostream& output ) const
 {
     int numFailed = 0;
     const int numRequired = requiredArgs_.size();
@@ -207,55 +208,55 @@ Args::EnsureValid( std::ostream& os ) const
             ++numFailed;
     if( numFailed > 0 )
     {
-        PrintReport( os );
+        PrintReport( output );
         throw std::logic_error("Missing command-line arguments");
     }
 }
 
 inline void 
-Args::PrintReport( std::ostream& os ) const
+Args::PrintReport( std::ostream& output ) const
 {
     const int numRequired = requiredArgs_.size();
     const int numOptional = optionalArgs_.size();
 
-    os << "Required arguments:\n";
+    output << "Required arguments:\n";
     int numReqFailed = 0;
     for( int i=0; i<numRequired; ++i )
     {
         const RequiredArg& reqArg = requiredArgs_[i];
         if( !reqArg.found )
             ++numReqFailed;
-        os << "  [" << i << "]:\n"
-           << "    label:       " << reqArg.name << "\n"
-           << "    description: " << reqArg.desc << "\n"
-           << "    type string: " << reqArg.typeInfo << "\n"
-           << "    used value:  " << reqArg.usedVal << "\n"
-           << "    found:       " << reqArg.found << "\n";
+        output << "  [" << i << "]:\n"
+               << "    label:       " << reqArg.name << "\n"
+               << "    description: " << reqArg.desc << "\n"
+               << "    type string: " << reqArg.typeInfo << "\n"
+               << "    used value:  " << reqArg.usedVal << "\n"
+               << "    found:       " << reqArg.found << "\n";
     }
-    std::cout << "\n";
+    output << "\n";
 
-    os << "Optional arguments:\n";
+    output << "Optional arguments:\n";
     int numOptFailed = 0;
     for( int i=0; i<numOptional; ++i )
     {
         const OptionalArg& optArg = optionalArgs_[i];
         if( !optArg.found )
             ++numOptFailed;
-        os << "  [" << i << "]:\n"
-           << "    label:         " << optArg.name << "\n"
-           << "    description:   " << optArg.desc << "\n"
-           << "    type string:   " << optArg.typeInfo << "\n"
-           << "    default value: " << optArg.defaultVal << "\n"
-           << "    used value:    " << optArg.usedVal << "\n"
-           << "    found:         " << optArg.found << "\n";
+        output << "  [" << i << "]:\n"
+               << "    label:         " << optArg.name << "\n"
+               << "    description:   " << optArg.desc << "\n"
+               << "    type string:   " << optArg.typeInfo << "\n"
+               << "    default value: " << optArg.defaultVal << "\n"
+               << "    used value:    " << optArg.usedVal << "\n"
+               << "    found:         " << optArg.found << "\n";
     }
-    std::cout << "\n";
+    output << "\n";
 
-    os << "Out of " << numRequired << " required arguments, " 
-       << numReqFailed << " were not specified." << std::endl;
+    output << "Out of " << numRequired << " required arguments, " 
+           << numReqFailed << " were not specified." << std::endl;
 
-    os << "Out of " << numOptional << " optional arguments, "
-       << numOptFailed << " were not specified.\n" << std::endl;
+    output << "Out of " << numOptional << " optional arguments, "
+           << numOptFailed << " were not specified.\n" << std::endl;
 }
 
 } // namespace choice
