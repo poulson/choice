@@ -99,12 +99,14 @@ private:
     std::vector<OptionalArg> optionalArgs_;
 };
 
+inline
 Args::Args( int argc, char** argv )
 : argc_(argc), argv_(argv), usedArgs_(argc,false) 
 { }
 
 template<typename T>
-T Args::Required( std::string name, std::string desc )
+inline T
+Args::Required( std::string name, std::string desc )
 {
     char** arg = std::find( argv_, argv_+argc_, name );
     const bool found = ( arg != argv_+argc_ );
@@ -146,7 +148,8 @@ T Args::Required( std::string name, std::string desc )
 }
 
 template<typename T>
-T Args::Optional( std::string name, T defaultVal, std::string desc )
+inline T
+Args::Optional( std::string name, T defaultVal, std::string desc )
 {
     char** arg = std::find( argv_, argv_+argc_, name );
     const bool found = ( arg != argv_+argc_ );
@@ -194,7 +197,8 @@ T Args::Optional( std::string name, T defaultVal, std::string desc )
         return defaultVal; // avoid the double-cast
 }
 
-void Args::EnsureValid( std::ostream& os ) const
+inline void 
+Args::EnsureValid( std::ostream& os ) const
 {
     int numFailed = 0;
     const int numRequired = requiredArgs_.size();
@@ -208,7 +212,8 @@ void Args::EnsureValid( std::ostream& os ) const
     }
 }
 
-void Args::PrintReport( std::ostream& os ) const
+inline void 
+Args::PrintReport( std::ostream& os ) const
 {
     const int numRequired = requiredArgs_.size();
     const int numOptional = optionalArgs_.size();
