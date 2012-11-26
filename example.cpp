@@ -22,9 +22,6 @@ main( int argc, char** argv )
         // (otherwise the report is printed and an exception is thrown)
         args.Process();
 
-        // This prints the detailed report for the command-line options
-        args.PrintReport();
-        
         // A sanity check on the actual values
         std::cout 
             << "nb      = " << nb << "\n"

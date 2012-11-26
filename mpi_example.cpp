@@ -30,9 +30,6 @@ main( int argc, char** argv )
         // specified as a command-line option.
         args.Process();
 
-        // This prints the detailed report for the command-line options
-        args.PrintReport();
-        
         // A sanity check on the actual values
         if( commRank == 0 )
         {
