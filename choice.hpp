@@ -42,6 +42,13 @@
 
 namespace choice {
 
+class ArgException : public std::logic_error
+{
+public:
+    ArgException( const char* msg="Argument exception" )
+    : std::logic_error( msg ) { }
+};
+
 class Args
 {
 public:
@@ -53,7 +60,7 @@ public:
     template<typename T>
     T Optional( std::string name, T defaultVal, std::string desc="N/A" );
 
-    void EnsureValid( std::ostream& output=std::cout ) const;
+    void Process( std::ostream& output=std::cout ) const;
     void PrintReport( std::ostream& output=std::cout ) const;
 
 private:
@@ -113,7 +120,10 @@ Args::Required( std::string name, std::string desc )
     const bool found = ( arg != argv_+argc_ );
     const bool invalidFound = ( arg == argv_+argc_-1 );
     if( invalidFound )
-        throw std::logic_error("Missing value for last command-line argument");
+    {
+        error_ << "Missing value for last command-line argument" << std::endl;
+        throw ArgException();
+    }
 
     std::string typeInfo( typeid(T).name() );
     std::string usedVal = ( found ? arg[1] : "N/A" );
@@ -156,7 +166,10 @@ Args::Optional( std::string name, T defaultVal, std::string desc )
     const bool found = ( arg != argv_+argc_ );
     const bool invalidFound = ( arg == argv_+argc_-1 );
     if( invalidFound )
-        throw std::logic_error("Missing value for last command-line argument");
+    {
+        error_ << "Missing value for last command-line argument" << std::endl;
+        throw ArgException();
+    }
 
     std::string typeInfo( typeid(T).name() );
 
@@ -199,17 +212,21 @@ Args::Optional( std::string name, T defaultVal, std::string desc )
 }
 
 inline void 
-Args::EnsureValid( std::ostream& output ) const
+Args::Process( std::ostream& output ) const
 {
+    std::string help = "--help";
+    char** arg = std::find( argv_, argv_+argc_, help );
+    const bool foundHelp = ( arg != argv_+argc_ );
+
     int numFailed = 0;
     const int numRequired = requiredArgs_.size();
     for( int i=0; i<numRequired; ++i )
         if( !requiredArgs_[i].found )
             ++numFailed;
-    if( numFailed > 0 )
+    if( numFailed > 0 || foundHelp )
     {
         PrintReport( output );
-        throw std::logic_error("Missing command-line arguments");
+        throw ArgException(); 
     }
 }
 
@@ -219,7 +236,8 @@ Args::PrintReport( std::ostream& output ) const
     const int numRequired = requiredArgs_.size();
     const int numOptional = optionalArgs_.size();
 
-    output << "Required arguments:\n";
+    if( numRequired > 0 )
+        output << "Required arguments:\n";
     int numReqFailed = 0;
     for( int i=0; i<numRequired; ++i )
     {
@@ -233,7 +251,8 @@ Args::PrintReport( std::ostream& output ) const
                << "    found:       " << reqArg.found << "\n\n";
     }
 
-    output << "Optional arguments:\n";
+    if( numOptional > 0 )
+        output << "Optional arguments:\n";
     int numOptFailed = 0;
     for( int i=0; i<numOptional; ++i )
     {

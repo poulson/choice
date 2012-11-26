@@ -20,7 +20,7 @@ main( int argc, char** argv )
         // This should always be called and ensures that all of the required
         // command-line arguments were specified 
         // (otherwise the report is printed and an exception is thrown)
-        args.EnsureValid();
+        args.Process();
 
         // This prints the detailed report for the command-line options
         args.PrintReport();
@@ -35,9 +35,9 @@ main( int argc, char** argv )
             << "tol     = " << tol << "\n"
             << std::endl;
     }
-    catch( std::logic_error& e )
-    {
-        std::cerr << "Caught exception: " << e.what() << std::endl;
+    catch( ArgException& e ) 
+    { 
+        // There is no reason to do anything 
     }
 
     return 0;

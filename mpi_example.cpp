@@ -25,8 +25,10 @@ main( int argc, char** argv )
 
         // This should always be called and ensures that all of the required
         // command-line arguments were specified 
-        // (otherwise the report is printed and an exception is thrown)
-        args.EnsureValid();
+        // (otherwise the report is printed and an exception is thrown).
+        // It also prints the report and throws an exception if "--help" is 
+        // specified as a command-line option.
+        args.Process();
 
         // This prints the detailed report for the command-line options
         args.PrintReport();
@@ -44,12 +46,9 @@ main( int argc, char** argv )
                 << std::endl;
         }
     }
-    catch( std::logic_error& e )
+    catch( ArgException& e )
     {
-        std::ostringstream os;
-        os << "Process " << commRank << " caught exception: " << e.what() 
-           << std::endl;
-        std::cerr << os.str();
+        // There is no reason to do anything
     }
 
     MPI_Finalize();
