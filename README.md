@@ -18,3 +18,77 @@ driver of the projects
 [Elemental's example drivers](http://github.com/poulson/Elemental/blob/master/examples) have already been converted to make use of 
 [choice::MpiArgs](http://github.com/poulson/choice/blob/master/mpi_choice.hpp) 
 and the remaining drivers are soon to follow.
+
+Usage
+-----
+
+The 
+[choice::Args example](http://github.com/poulson/choice/blob/master/example.cpp)
+can typically be compiled with the command:
+
+    g++ -I. example.cpp -o example
+
+Running it without any command-line options, e.g., with
+
+    ./example
+
+would produce the output
+
+    Required arguments:
+      --nb
+        description: performance tuning parameter
+        type string: i
+        used value:  N/A
+        found:       0
+    
+      --gridHeight
+        description: process grid height
+        type string: i
+        used value:  N/A
+        found:       0
+    
+    Optional arguments:
+      --tol
+        description:   rel. tolerance for GMRES
+        type string:   d
+        default value: 1e-06
+        used value:    1e-06
+        found:         0
+    
+      --nbLocal
+        description:   local blocksize
+        type string:   i
+        default value: 32
+        used value:    32
+        found:         0
+    
+      --ratio
+        description:   height/width ratio for QR
+        type string:   d
+        default value: 0.5
+        used value:    0.5
+        found:         0
+    
+    Out of 2 required arguments, 2 were not specified.
+    Out of 3 optional arguments, 3 were not specified.
+ 
+whereas the command
+
+    ./example --nb 64 --gridHeight 3
+
+should successfully run. The 
+[choice::MpiArgs example](http://github.com/poulson/choice/blob/master/mpi_example.cpp)
+can similarly be compiled with the command
+
+    mpicxx -I. mpi_example.cpp -o mpi_example    
+
+and the commands
+
+    mpirun -np 8 ./mpi_example
+
+and 
+
+    mpirun -np 8 ./mpi_example --nb 64 --gridHeight 3
+
+would use eight MPI processes and have output equivalent to in the sequential
+case.
