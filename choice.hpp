@@ -226,14 +226,12 @@ Args::PrintReport( std::ostream& output ) const
         const RequiredArg& reqArg = requiredArgs_[i];
         if( !reqArg.found )
             ++numReqFailed;
-        output << "  [" << i << "]:\n"
-               << "    label:       " << reqArg.name << "\n"
+        output << "  " << reqArg.name << "\n"
                << "    description: " << reqArg.desc << "\n"
                << "    type string: " << reqArg.typeInfo << "\n"
                << "    used value:  " << reqArg.usedVal << "\n"
-               << "    found:       " << reqArg.found << "\n";
+               << "    found:       " << reqArg.found << "\n\n";
     }
-    output << "\n";
 
     output << "Optional arguments:\n";
     int numOptFailed = 0;
@@ -242,15 +240,13 @@ Args::PrintReport( std::ostream& output ) const
         const OptionalArg& optArg = optionalArgs_[i];
         if( !optArg.found )
             ++numOptFailed;
-        output << "  [" << i << "]:\n"
-               << "    label:         " << optArg.name << "\n"
+        output << "  " << optArg.name << "\n"
                << "    description:   " << optArg.desc << "\n"
                << "    type string:   " << optArg.typeInfo << "\n"
                << "    default value: " << optArg.defaultVal << "\n"
                << "    used value:    " << optArg.usedVal << "\n"
-               << "    found:         " << optArg.found << "\n";
+               << "    found:         " << optArg.found << "\n\n";
     }
-    output << "\n";
 
     output << "Out of " << numRequired << " required arguments, " 
            << numReqFailed << " were not specified." << std::endl;
