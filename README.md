@@ -39,13 +39,13 @@ would produce the output
         description: performance tuning parameter
         type string: i
         used value:  N/A
-        found:       0
+        NOT found
     
       --gridHeight
         description: process grid height
         type string: i
         used value:  N/A
-        found:       0
+        NOT found
     
     Optional arguments:
       --tol
@@ -53,21 +53,21 @@ would produce the output
         type string:   d
         default value: 1e-06
         used value:    1e-06
-        found:         0
+        NOT found
     
       --nbLocal
         description:   local blocksize
         type string:   i
         default value: 32
         used value:    32
-        found:         0
+        NOT found
     
       --ratio
         description:   height/width ratio for QR
         type string:   d
         default value: 0.5
         used value:    0.5
-        found:         0
+        NOT found
     
     Out of 2 required arguments, 2 were not specified.
     Out of 3 optional arguments, 3 were not specified.
