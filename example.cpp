@@ -10,24 +10,20 @@ main( int argc, char** argv )
         double tol, ratio;
 
         Args args( argc, argv );
-        nb = args.Required<int>("--nb", "performance tuning parameter");
-        height = args.Required<int>("--gridHeight", "process grid height");
-        tol = args.Optional("--tol", 1.e-6, "rel. tolerance for GMRES");
-        nbLocal = args.Optional("--nbLocal", 32, "local blocksize");
-        ratio = args.Optional("--ratio", 0.5, "height/width ratio for QR");
+
+        // Required arguments
+        nb = args.Input<int>("--nb", "performance tuning parameter");
+        height = args.Input<int>("--gridHeight", "process grid height");
+
+        // Optional arguments (which have default values)
+        tol = args.Input("--tol", "rel. tolerance for GMRES", 1.e-6);
+        nbLocal = args.Input("--nbLocal", "local blocksize", 32);
+        ratio = args.Input("--ratio", "height/width ratio for QR", 0.5);
+
         // This should always be called and ensures that all of the required
         // command-line arguments were specified 
         // (otherwise the report is printed and an exception is thrown)
         args.Process();
-
-        // A sanity check on the actual values
-        std::cout 
-            << "nb      = " << nb << "\n"
-            << "height  = " << height << "\n"
-            << "nbLocal = " << nbLocal << "\n"
-            << "ratio   = " << ratio << "\n"
-            << "tol     = " << tol << "\n"
-            << std::endl;
     }
     catch( ArgException& e ) 
     { 

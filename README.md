@@ -3,7 +3,9 @@ Choice
 
 Choice is an extremely simple set of two header-file command-line parsers, 
 [choice::Args](http://github.com/poulson/choice/blob/master/choice.hpp) and 
-[choice::MpiArgs](http://github.com/poulson/choice/blob/master/mpi_choice.hpp). 
+[choice::MpiArgs](http://github.com/poulson/choice/blob/master/mpi_choice.hpp),
+which are both inspired by the command-line processing in 
+[Madagascar](http://ahay.org). 
 Their usage is demonstrated through the following
 [serial](http://github.com/poulson/choice/blob/master/example.cpp) and 
 [parallel](http://github.com/poulson/choice/blob/master/mpi_example.cpp) 
