@@ -19,7 +19,7 @@
 namespace choice {
 
 template<typename TOut,typename TIn>
-TOut Cast( const TIn& input )
+inline TOut Cast( const TIn& input )
 {
     std::stringstream stream;
     TOut output;
@@ -31,7 +31,7 @@ TOut Cast( const TIn& input )
 }
 
 template<>
-bool Cast( const std::string& input )
+inline bool Cast( const std::string& input )
 {
     std::string trueString("true");
     std::string falseString("false");
@@ -48,7 +48,6 @@ bool Cast( const std::string& input )
         return output; 
     }
 }
-
 
 class ArgException : public std::logic_error
 {
