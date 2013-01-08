@@ -1,34 +1,10 @@
 /*
-   Copyright (c) 2012, Jack Poulson
+   Copyright (c) 2012-2013, Jack Poulson
    All rights reserved.
 
-   This file is part of Choice, a simple command-line option library.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-
-    - Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
-
-    - Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    - Neither the name of the owner nor the names of its contributors
-      may be used to endorse or promote products derived from this software
-      without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-   POSSIBILITY OF SUCH DAMAGE.
+   This file is part of Choice and is under the BSD 2-Clause License, 
+   which can be found in the LICENSE file in the root directory, or at 
+   http://opensource.org/licenses/BSD-2-Clause
 */
 #ifndef MPI_CHOICE_H
 #define MPI_CHOICE_H 1
@@ -81,18 +57,6 @@ private:
         : name(n), desc(d), typeInfo(t), 
           defaultVal(dv), usedVal(uv), found(f) { } 
     };
-
-    template<typename TOut,typename TIn>
-    TOut Cast( const TIn& input )
-    {
-        std::stringstream stream;
-        TOut output;
-
-        stream << input;
-        stream >> output;
-
-        return output;
-    }
 
     std::vector<RequiredArg> requiredArgs_;
     std::vector<OptionalArg> optionalArgs_;
@@ -250,14 +214,11 @@ MpiArgs::PrintReport( std::ostream& output ) const
         const RequiredArg& reqArg = requiredArgs_[i];
         if( !reqArg.found )
             ++numReqFailed;
-        output << "  " << reqArg.name << "\n"
-               << "    description: " << reqArg.desc << "\n"
-               << "    type string: " << reqArg.typeInfo << "\n"
-               << "    used value:  " << reqArg.usedVal << "\n";
-        if( reqArg.found )
-            output << "    found\n\n";
-        else
-            output << "    NOT found\n\n";
+        std::string foundString = ( reqArg.found ? "found" : "NOT found" );
+        output << "  " << reqArg.name 
+               << " [" << reqArg.typeInfo << "," << reqArg.usedVal << "," 
+               << foundString << "]\n"
+               << "    " << reqArg.desc << "\n\n";
     }
 
     if( numOptional > 0 )
@@ -268,15 +229,12 @@ MpiArgs::PrintReport( std::ostream& output ) const
         const OptionalArg& optArg = optionalArgs_[i];
         if( !optArg.found )
             ++numOptFailed;
-        output << "  " << optArg.name << "\n"
-               << "    description:   " << optArg.desc << "\n"
-               << "    type string:   " << optArg.typeInfo << "\n"
-               << "    default value: " << optArg.defaultVal << "\n"
-               << "    used value:    " << optArg.usedVal << "\n";
-        if( optArg.found )
-            output << "    found\n\n";
-        else
-            output << "    NOT found\n\n";
+        std::string foundString = ( optArg.found ? "found" : "NOT found" );
+        output << "  " << optArg.name 
+               << " [" << optArg.typeInfo 
+               << "," << optArg.defaultVal << "," << optArg.usedVal << ","
+               << foundString << "]\n"
+               << "    " << optArg.desc << "\n\n";
     }
 
     output << "Out of " << numRequired << " required arguments, " 

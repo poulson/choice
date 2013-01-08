@@ -35,48 +35,27 @@ Running it without any command-line options, e.g., with
     ./example
 
 would produce the output
-
-    Required arguments:
-      --nb
-        description: performance tuning parameter
-        type string: i
-        used value:  N/A
-        NOT found
     
-      --gridHeight
-        description: process grid height
-        type string: i
-        used value:  N/A
-        NOT found
+    Required arguments:
+      --nb [i,N/A,NOT found]
+        performance tuning parameter
+    
+      --height [i,N/A,NOT found]
+        matrix height
     
     Optional arguments:
-      --tol
-        description:   rel. tolerance for GMRES
-        type string:   d
-        default value: 1e-06
-        used value:    1e-06
-        NOT found
+      --tol [d,1e-06,1e-06,NOT found]
+        relative tolerance
     
-      --nbLocal
-        description:   local blocksize
-        type string:   i
-        default value: 32
-        used value:    32
-        NOT found
-    
-      --ratio
-        description:   height/width ratio for QR
-        type string:   d
-        default value: 0.5
-        used value:    0.5
-        NOT found
+      --print [b,0,0,NOT found]
+        print results?
     
     Out of 2 required arguments, 2 were not specified.
-    Out of 3 optional arguments, 3 were not specified.
+    Out of 2 optional arguments, 2 were not specified.
  
 whereas the command
 
-    ./example --nb 64 --gridHeight 3
+    ./example --nb 64 --height 100
 
 should successfully run. The 
 [choice::MpiArgs example](http://github.com/poulson/choice/blob/master/mpi_example.cpp)
@@ -90,7 +69,7 @@ and the commands
 
 and 
 
-    mpirun -np 8 ./mpi_example --nb 64 --gridHeight 3
+    mpirun -np 8 ./mpi_example --nb 64 --height 100
 
 would use eight MPI processes and have output equivalent to in the sequential
 case.

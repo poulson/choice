@@ -1,3 +1,11 @@
+/*
+   Copyright (c) 2012-2013, Jack Poulson
+   All rights reserved.
+
+   This file is part of Choice and is under the BSD 2-Clause License, 
+   which can be found in the LICENSE file in the root directory, or at 
+   http://opensource.org/licenses/BSD-2-Clause
+*/
 #include "mpi_choice.hpp"
 using namespace choice;
 
@@ -12,26 +20,23 @@ main( int argc, char** argv )
 
     try
     {
-        int nb, height, nbLocal;
-        double tol, ratio;
-
         MpiArgs args( argc, argv );
 
         // Required arguments
-        nb = args.Input<int>("--nb", "performance tuning parameter");
-        height = args.Input<int>("--gridHeight", "process grid height");
+        const int nb = args.Input<int>("--nb","performance tuning parameter");
+        const int height = args.Input<int>("--height","matrix height");
 
         // Optional arguments (which have default values)
-        tol = args.Input("--tol", "rel. tolerance for GMRES", 1.e-6);
-        nbLocal = args.Input("--nbLocal", "local blocksize", 32);
-        ratio = args.Input("--ratio", "height/width ratio for QR", 0.5);
+        const double tol = args.Input("--tol","relative tolerance",1.e-6);
+        const bool print = args.Input("--print","print results?",false);
 
         // This should always be called and ensures that all of the required
         // command-line arguments were specified 
-        // (otherwise the report is printed and an exception is thrown).
-        // It also prints the report and throws an exception if "--help" is 
-        // specified as a command-line option.
+        // (otherwise the report is printed and an exception is thrown)
         args.Process();
+
+        if( commRank==0 && print )
+            std::cout << "Would have printed data." << std::endl;
     }
     catch( ArgException& e )
     {
